@@ -1,0 +1,6 @@
+.idea
+.git
+.bsp
+target
+project/project
+*/target/*
