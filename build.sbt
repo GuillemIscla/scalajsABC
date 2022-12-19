@@ -1,5 +1,41 @@
-name := "scalajsABC"
+import sbt.Keys._
+import sbt._
+import Settings._
 
-version := "0.1"
+lazy val shared = crossProject(JSPlatform, JVMPlatform)
+  .in(file("shared"))
+  .settings(sharedSettings())
+  .settings(libraryDependencies ++= Seq(
+    "io.circe" %%% "circe-core" % Dependencies.ver.circe
+    , "io.circe" %%% "circe-generic" % Dependencies.ver.circe
+    , "io.circe" %%% "circe-parser" % Dependencies.ver.circe
+  ))
+  .jsSettings(libraryDependencies ++= Seq(
+    "com.lihaoyi" %%% "utest" % Dependencies.ver.utest % "test"
+    , "org.scala-js" %%% "scalajs-dom" % Dependencies.ver.scalajsDom
+    , "org.scala-js" %% "scalajs-stubs" % Dependencies.ver.scalaJsStubs % "provided"
+  ))
+  .jvmSettings(libraryDependencies ++=
+    Dependencies.akkaHttp
+      ++ Dependencies.scalaTest
+      ++ Dependencies.typesafeConfig
+  )
 
-scalaVersion := "2.13.10"
+lazy val sharedJvm = shared.jvm
+lazy val sharedJs = shared.js
+
+lazy val backend = (project in file("backend"))
+  .enablePlugins(JavaAppPackaging, DockerPlugin)
+  .dependsOn(sharedJvm)
+  .settings(sharedSettings())
+  .settings(
+    libraryDependencies ++= (sharedJvm / libraryDependencies).value
+      ++ Seq(Dependencies.logging)
+    , run / fork := true
+  )
+
+lazy val frontend = (project in file("frontend"))
+  .enablePlugins(ScalaJSPlugin)
+  .dependsOn(sharedJs)
+  .settings(sharedSettings())
+  .settings(sharedSettingsJS(mainClassName = "FrontendMain"))
