@@ -32,6 +32,14 @@ lazy val backend = (project in file("backend"))
     libraryDependencies ++= (sharedJvm / libraryDependencies).value
       ++ Seq(Dependencies.logging)
     , run / fork := true
+    , Compile / packageBin / mappings ++= {
+      Seq(
+        (frontend / Compile / fastOptJS).value
+      )
+        .flatMap(attFile => Seq(attFile.data, attFile.metadata(scalaJSSourceMap)))
+        .map { f => (f, s"public/js/${f.getName}")}
+    }
+
   )
 
 lazy val frontend = (project in file("frontend"))

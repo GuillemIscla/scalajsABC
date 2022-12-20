@@ -5,6 +5,7 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives
+import io.circe.syntax._
 import org.knoxmix.infrastructure.AkkaConfig
 
 import scala.concurrent.ExecutionContextExecutor
@@ -22,6 +23,11 @@ class BackendHttpServer(akkaConfig: AkkaConfig) extends Directives {
       get {
         val html = Source.fromResource("public/index.html").mkString
         complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, html))
+      }
+    } ~
+    path("getUser") {
+      get {
+        complete(HttpEntity(ContentTypes.`application/json`, User("John", "Doe", 24).asJson.noSpaces))
       }
     } ~
     path("assets" / Remaining) { file =>
