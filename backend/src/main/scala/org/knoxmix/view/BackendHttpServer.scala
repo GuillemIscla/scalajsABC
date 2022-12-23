@@ -7,6 +7,8 @@ import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives
 import io.circe.syntax._
 import org.knoxmix.infrastructure.AkkaConfig
+import org.knoxmix.domain.User
+import org.knoxmix.view.JsonCodecs._
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration.DurationInt
