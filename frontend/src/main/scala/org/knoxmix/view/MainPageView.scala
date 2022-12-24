@@ -25,7 +25,7 @@ class MainPageView(userService:UserService) {
   val messageDiv:Element = attachNewElement("div", main)
   attachNewElement("hr", main)
   val button: HTMLButtonElement = attachNewElement("button", main, Map("className" -> "btn btn-outline-success my-2 my-sm-0")).asInstanceOf[HTMLButtonElement]
-  button.onclick = { _ => messageDiv.textContent = "Button clicked"}
+  button.onclick = { _ => userService.getUser.foreach(msg => messageDiv.textContent = msg)}
   button.textContent = "Get User"
   val bottom:Element = attachNewElement("div", main, Map("className" -> "bottom"))
   bottom.textContent = "Created by Guillem Iscla"
